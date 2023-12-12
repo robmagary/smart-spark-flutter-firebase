@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "317921569929",
+    "project_id": "smart-spark-api",
+    "storage_bucket": "smart-spark-api.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317921569929:android:c2f6b3cdebf8562faf6a58",
+        "android_client_info": {
+          "package_name": "com.example.smartspark"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvYHYE_6Echrl1IRsONIRoGsOIDG77SiA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
