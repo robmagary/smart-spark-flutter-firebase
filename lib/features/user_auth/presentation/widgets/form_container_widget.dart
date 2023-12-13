@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:smartspark/helpers/null_helpers.dart';
 
 class FormContainerWidget extends StatefulWidget {
   final TextEditingController? controller;
   final Key? fieldKey;
   final bool? isPasswordField;
+  final bool? isDiabled;
   final String? hintText;
   final String? labelText;
   final String? helperText;
@@ -16,6 +18,7 @@ class FormContainerWidget extends StatefulWidget {
     super.key,
     this.controller,
     this.isPasswordField,
+    this.isDiabled,
     this.fieldKey,
     this.hintText,
     this.labelText,
@@ -27,7 +30,7 @@ class FormContainerWidget extends StatefulWidget {
   });
 
   @override
-  _FormContainerWidgetState createState() => _FormContainerWidgetState();
+  State<FormContainerWidget> createState() => _FormContainerWidgetState();
 }
 
 class _FormContainerWidgetState extends State<FormContainerWidget> {
@@ -44,6 +47,7 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
       ),
       child: TextFormField(
         style: const TextStyle(color: Colors.blue),
+        readOnly: nullableBoolWithDefault(widget.isDiabled, false),
         controller: widget.controller,
         keyboardType: widget.inputType,
         key: widget.fieldKey,
