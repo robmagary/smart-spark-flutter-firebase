@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartspark/features/user_auth/implementation/firebase_auth_services.dart';
 import 'package:smartspark/features/user_auth/presentation/pages/home_page.dart';
 import 'package:smartspark/features/user_auth/presentation/pages/sign_up_page.dart';
 import 'package:smartspark/features/user_auth/presentation/widgets/form_container_widget.dart';
+import 'package:smartspark/helpers/ui_helpers.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  bool _isLoading = false;
+  final FirebaseAuthService _auth = FirebaseAuthService();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,35 +49,41 @@ class LoginPage extends StatelessWidget {
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   sizedBox30,
-                  const FormContainerWidget(
+                  FormContainerWidget(
+                    controller: _emailController,
                     hintText: "Email",
+                    isDiabled: _isLoading,
                     isPasswordField: false,
                   ),
                   sizedBox10,
-                  const FormContainerWidget(
+                  FormContainerWidget(
+                    controller: _passwordController,
                     hintText: "Password",
+                    isDiabled: _isLoading,
                     isPasswordField: true,
                   ),
                   sizedBox30,
                   GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const HomePage()));
-                      },
+                      onTap: _isLoading
+                          ? null
+                          : () {
+                              _signIn();
+                            },
                       child: Container(
                         width: double.infinity,
                         height: 45,
                         decoration: BoxDecoration(
                             color: Colors.blue,
                             borderRadius: BorderRadius.circular(10)),
-                        child: const Center(
-                            child: Text(
-                          "Login",
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        )),
+                        child: Center(
+                            child: _isLoading
+                                ? const LoadingWidget()
+                                : const Text(
+                                    "Login",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  )),
                       )),
                   sizedBox10,
                   Row(
@@ -69,10 +95,12 @@ class LoginPage extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SignUpPage()));
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpPage()),
+                            (route) => false,
+                          );
                         },
                         child: const Text(
                           "Sign up",
@@ -85,5 +113,29 @@ class LoginPage extends StatelessWidget {
                 ],
               )),
         ));
+  }
+
+  void _signIn() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    User? user = await _auth.signInWithEmailAndPassword(email, password);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (user != null && context.mounted) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+          (route) => false);
+    } else {
+      return null;
+    }
   }
 }
